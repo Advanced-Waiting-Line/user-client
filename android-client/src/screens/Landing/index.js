@@ -3,7 +3,7 @@ import * as Font from 'expo-font';
 import gql from 'graphql-tag';
 import { useApolloClient, useQuery } from '@apollo/react-hooks';
 import { View, Text, ImageBackground } from 'react-native';
-import { Button } from 'react-native-elements';
+import Button from '../../component/Button';
 import LottieView from 'lottie-react-native'
 
 const GET_LOCAL_STATE = gql`
@@ -12,7 +12,7 @@ const GET_LOCAL_STATE = gql`
   }
 `;
 
-const Landing = ({ animation }) => {
+const Landing = ({ animation, navigation }) => {
   const state = useApolloClient()
   
   useEffect(() => {
@@ -50,11 +50,7 @@ const Landing = ({ animation }) => {
             source={require('../../../assets/1298-floating-cloud.json')}
           />
         </View>
-        <Button title='Mulai' raised={ true }
-        
-        containerStyle={{ width: 240, borderRadius: 24 }}
-        titleStyle={{ fontSize: 24 }}
-        buttonStyle={{ backgroundColor: '#0095FE', borderRadius: 24, width: 240 }} />
+        <Button title='Mulai' onPress={() => navigation.navigate('Signup')}/>
       </View>
     </ImageBackground>
   )
