@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import * as Font from 'expo-font';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-hooks';
@@ -78,6 +79,7 @@ const Navigation = createAppContainer(rootSwitch)
 
 const client = new ApolloClient({
   uri: 'http://localhost:3000/graphql',
+  resolvers: {}
 });
 
 const App = () => {
