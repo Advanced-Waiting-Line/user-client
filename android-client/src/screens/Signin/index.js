@@ -11,7 +11,7 @@ const GET_LOCAL_STATE = gql`
   }
 `;
 
-const SignIn = () => {
+const SignIn = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
 
   if(data && data.fontLoaded){
@@ -22,11 +22,13 @@ const SignIn = () => {
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Email</Text>
           <Input />
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Password</Text>
-          <Input />
-          <Button title='Masuk'/>
+          <Input password={true}/>
+          <Button title='Masuk' onPress={ ()=> navigation.navigate('Home')}/>
         </View>
       </ImageBackground>
     )
+  } else {
+    return <View/>
   }
 }
 

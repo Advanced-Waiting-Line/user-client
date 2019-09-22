@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import ApolloClient from 'apollo-boost';
-import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider, useApolloClient } from '@apollo/react-hooks';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import { FontAwesome } from '@expo/vector-icons'
+import * as Font from 'expo-font';
 
 import LandingScreen from './src/screens/Landing';
 import LoginScreen from './src/screens/Signin';
@@ -86,7 +87,7 @@ const homeTab = createBottomTabNavigator({
       borderTopColor: '#dedede',
       borderColor: '#dedede',
       borderWidth: 1,
-    }
+    },
   },
 });
 
@@ -115,10 +116,32 @@ const client = new ApolloClient({
   resolvers: {}
 });
 
+const Container = () => {
+  const state = useApolloClient()
+  
+  useEffect(() => {   
+    state.writeData({ data: { fontLoaded: false } })
+    Font.loadAsync({
+      'comfortaa': require('./assets/fonts/comfortaa/Comfortaa-Regular.ttf'),
+      'comfortaa-bold': require('./assets/fonts/comfortaa/Comfortaa-Bold.ttf'),
+      'nunito': require('./assets/fonts/nunito/Nunito-Regular.ttf'),
+      'nunito-bold': require('./assets/fonts/nunito/Nunito-Bold.ttf'),
+    })
+    .then( () => {
+      state.writeData({ data: { fontLoaded: true } })
+    })
+    .catch(console.log)
+  }, [])
+
+  return (
+    <Navigation/>
+  )
+}
+
 const App = () => {
   return (
     <ApolloProvider client={client}>
-      <Navigation/>
+      <Container/>
     </ApolloProvider>
   )
 }

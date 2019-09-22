@@ -15,9 +15,9 @@ const MainButton = ({ title, onPress }) => {
   if(data && data.fontLoaded){
     return (
       <Button title={ title } raised={ true } onPress={onPress}
-          containerStyle={{ width: 300, borderRadius: 24 }}
+          containerStyle={{ borderRadius: 24, position: 'absolute', bottom: 20, left: 240, right: 20, zIndex: 3 }}
           titleStyle={{ fontSize: 24, fontFamily: 'nunito' }}
-          buttonStyle={{ backgroundColor: '#0095FE', borderRadius: 24, width: 300 }}
+          buttonStyle={{ backgroundColor: '#0095FE', borderRadius: 24 }}
       />
     )
   } else {
