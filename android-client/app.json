@@ -27,7 +27,12 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.hacktiv8fp.awan"
+      "package": "com.hacktiv8fp.awan",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyC8MMkbDo_v6ZjOTGw3-N7iJr8RZmaxn4s"
+        }
+      }
     }
   }
 }

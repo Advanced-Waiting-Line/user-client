@@ -5,6 +5,7 @@ import { Card, Divider } from 'react-native-elements';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import Button from '../../component/FloatingButton';
+import Axios from 'axios'
 
 const GET_LOCAL_STATE = gql`
   {
@@ -14,6 +15,14 @@ const GET_LOCAL_STATE = gql`
 
 const SelectProblem = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
+
+  useEffect(() => {
+    Axios.get('https://maps.googleapis.com/maps/api/directions/json?origin=Bandung&destination=Jakarta&key=AIzaSyC8MMkbDo_v6ZjOTGw3-N7iJr8RZmaxn4s')
+      .then(({ data }) => {
+        console.log(data)
+      })
+      .catch(console.log)
+  }, [])
 
   if(data && data.fontLoaded){
     return (

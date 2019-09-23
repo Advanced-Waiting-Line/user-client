@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import { View, Text, ImageBackground } from 'react-native';
@@ -12,6 +12,9 @@ const GET_LOCAL_STATE = gql`
 `;
 
 const SignIn = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
   const { data } = useQuery(GET_LOCAL_STATE);
 
   if(data && data.fontLoaded){
@@ -20,9 +23,10 @@ const SignIn = ({ navigation }) => {
         <View style={{  flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 100}}>
           <Text style={{ fontFamily: 'comfortaa-bold', fontSize: 80, color: '#ffffff' }}>masuk</Text>
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Email</Text>
-          <Input />
+          <Input width={300} onChangeText={ text => setEmail(text)} value={email} />
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Password</Text>
-          <Input password={true}/>
+          <Input width={300} onChangeText={ text => setPassword(text)} value={password} password={true}/>
+          <View style={{ height: 20 }} />
           <Button title='Masuk' onPress={ ()=> navigation.navigate('Home')}/>
         </View>
       </ImageBackground>

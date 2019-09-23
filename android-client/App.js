@@ -58,6 +58,7 @@ const homeTab = createBottomTabNavigator({
     screen: UserScreen,
   },
 },{
+  initialRouteName: 'Queue',
   defaultNavigationOptions: ({ navigation }) => ({
     tabBarIcon: ({ tintColor }) => {
       const { routeName } = navigation.state;
@@ -106,7 +107,7 @@ const rootSwitch = createSwitchNavigator({
   }
   
 },{
-  initialRouteName: 'Home'
+  initialRouteName: 'Landing'
 })
 
 const Navigation = createAppContainer(rootSwitch)
