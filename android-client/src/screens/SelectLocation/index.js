@@ -23,23 +23,25 @@ const SelectLocation = ({ navigation }) => {
             <View style={{ width: 60, backgroundColor: '#0095FE', height: 12, borderRadius: 6 }}/>
           </View>
           <Text style={{ textAlign: 'left', width: 300, fontSize: 24, color: '#0095FE' }}>Pilih Lokasi Keberangkatan</Text>
-          <Card containerStyle={{ height: 70, width: 300, borderRadius: 10 }}>
+          <Card containerStyle={{ height: 72, width: 300, borderRadius: 10 }}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <View style={{ flex: 0.2 }}>
-                <Ionicons name='md-home' size={30}/>
+                <Ionicons name='md-home' size={36} color='#888888'/>
               </View>
               <View style={{ flex: 0.8 }}>
-                <Text style={{ fontSize: 24, fontFamily: 'nunito' }}>Alamat Rumah Anda</Text>
+                <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Alamat Rumah Anda</Text>
+                <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>Jalan Cendrawasih</Text>
               </View>
             </View>
           </Card>
-          <Card containerStyle={{ height: 70, width: 300, borderRadius: 10 }}>
+          <Card containerStyle={{ height: 72, width: 300, borderRadius: 10 }}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <View style={{ flex: 0.2 }}>
-                <Ionicons name='md-pin' size={30}/>
+                <Ionicons name='md-pin' size={36} color='#888888'/>
               </View>
               <View style={{ flex: 0.8 }}>
-                <Text style={{ fontSize: 24, fontFamily: 'nunito' }}>Posisi Saat Ini</Text>
+                <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Posisi Anda Saat Ini</Text>
+                <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>Menggunakan GPS</Text>
               </View>
             </View>
           </Card>

@@ -18,7 +18,7 @@ const Homepage = ({ navigation }) => {
     <ImageBackground source={require('../../../assets/bg-04.jpg')} resizeMode='cover' style={{ width: '100%', height: '100%', flex: 1}}>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         {
-          data && data.fontLoaded ? <Text style={{ textAlign: 'left', width: 300, fontSize: 24, fontFamily: 'nunito-bold', color: '#0095FE' }}>Advanced Waiting Line</Text> : null
+          data && data.fontLoaded ? <Text style={{ textAlign: 'center', width: 300, fontSize: 32, fontFamily: 'nunito-bold', color: '#0095FE' }}>Advanced Waiting Line</Text> : null
         }
         <CloudAnimation size={400}/>
         {

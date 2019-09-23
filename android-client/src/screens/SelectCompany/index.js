@@ -19,9 +19,9 @@ const SelectCompany = ({ navigation }) => {
       <ImageBackground source={require('../../../assets/bg-05.jpg')} resizeMode='cover' style={{ width: '100%', height: '100%', flex: 1}}>
         <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
           <View style={{ width: 300, backgroundColor: '#dddddd', height: 12, borderRadius: 6, marginBottom: 20 }}>
-            <View style={{ width: 60, backgroundColor: '#0095FE', height: 12, borderRadius: 6 }}/>
+            <View style={{ width: 120, backgroundColor: '#0095FE', height: 12, borderRadius: 6 }}/>
           </View>
-          <Text style={{ textAlign: 'left', width: 300, fontSize: 24 }}>Select Location</Text>
+          <Text style={{ textAlign: 'left', width: 300, fontSize: 24, color: '#0095FE' }}>Pilih Lokasi Bank</Text>
           <Card/>
           <Card/>
           <Card/>
