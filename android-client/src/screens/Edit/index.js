@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { View, Text, ImageBackground, Image } from 'react-native';
 import { Button as ButtonPicker, Card } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
@@ -16,17 +16,23 @@ const GET_LOCAL_STATE = gql`
   }
 `;
 
-const SIGNUP = gql`
-  mutation registerUser(
-  $firstName: String
-  $lastName: String
-  $image: String
-  $email: String
-  $password: String
-  $location: InputLocation
+const FIND_ONE_USER = gql`
+  
+`
+
+const UPDATE_USER = gql`
+  mutation updateUser(
+    $userId: String
+    $firstName: String
+    $lastName: String
+    $image: String
+    $email: String
+    $password: String
+    $location: InputLocation
   ){
-  registerUser
+    updateUser
     (
+      userId: $userId
       firstName: $firstName
       lastName: $lastName
       image: $image
@@ -35,12 +41,19 @@ const SIGNUP = gql`
       location: $location
     ){
       _id
+      firstName
+      lastName
+      email
+      password
+      location {
+        lat
+        lng
+      } 
     }
   }
 `;
 
-
-const SignUp = ({ navigation }) => {
+const EditProfile = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
 
   const [firstName, setFirstName] = useState('');
@@ -55,17 +68,6 @@ const SignUp = ({ navigation }) => {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   })
-
-  const register = () => {
-    useMutation(SIGNUP, { variables: {
-      firstName,
-      lastName,
-      email,
-      password,
-      image,
-      location
-    }})
-  };
 
   const _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -98,8 +100,8 @@ const SignUp = ({ navigation }) => {
   } else {
     return (
       <ImageBackground source={require('../../../assets/bg-03.jpg')} resizeMode='cover' style={{ width: '100%', height: '100%', flex: 1}}>
-        <View style={{  flex: 1, alignItems: 'center', paddingTop: 30 }}>
-          <Text style={{ fontFamily: 'comfortaa-bold', fontSize: 80, color: '#ffffff' }}>daftar</Text>
+        <View style={{  flex: 1, alignItems: 'center', paddingTop: 10 }}>
+          <Text style={{ fontFamily: 'comfortaa-bold', fontSize: 64, color: '#ffffff' }}>edit profil</Text>
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Nama</Text>
           <View style={{ flexDirection: 'row', width: 300}}>
             <View style={{ flex: 0.5 }}>
@@ -144,11 +146,11 @@ const SignUp = ({ navigation }) => {
           }}
           />
           {image ? <Image source={{ uri: `data:image/jpeg;charset=utf-8;base64,${image}` }} style={{ width: 200, height: 200, resizeMode: 'cover', zIndex: 10 }} /> : <View/> }
-          <Button title='Daftar' onPress={() => navigation.navigate('Login') }/>
+          <Button title='Edit' onPress={() => navigation.navigate('Login') }/>
         </View>
       </ImageBackground>
     )
   }
 }
 
-export default SignUp;
+export default EditProfile;

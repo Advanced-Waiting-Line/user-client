@@ -11,6 +11,18 @@ const GET_LOCAL_STATE = gql`
   }
 `;
 
+const GET_COMPANY_PROBLEM = gql`
+  query getCompanyProblem($companyId: String){
+    getCompanyProblem(
+      companyId: $companyId
+    ){
+      name
+      description
+      duration
+    }
+  }
+`;
+
 const SelectProblem = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
 

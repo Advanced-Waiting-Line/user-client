@@ -11,6 +11,21 @@ const GET_LOCAL_STATE = gql`
   }
 `;
 
+const GET_ALL_COMPANY = gql`
+  query getAllCompany{
+    getAllCompany{
+      _id
+      queue
+      email
+      password
+      location {
+        lat
+        lng
+      }
+    }
+  }
+`;
+
 const SelectCompany = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
 

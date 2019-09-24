@@ -11,6 +11,23 @@ const GET_LOCAL_STATE = gql`
   }
 `;
 
+const SIGNIN = gql`
+  mutation login(
+    $email: String
+    $password: String
+  ){
+  loginUser
+    (
+        email: $email
+        password: $password
+    ){
+      _id
+      email
+      token
+    }
+  }
+`;
+
 const SignIn = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

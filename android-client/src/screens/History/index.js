@@ -10,6 +10,35 @@ const GET_LOCAL_STATE = gql`
   }
 `;
 
+const GET_QUEUE_BY_USERID = gql`
+  query getQueueByUserId($token: String){
+    getQueueByUserId(
+        token: $token
+    ) {
+      _id
+      duration
+      userId {
+        firstName
+        lastName
+        location {
+          lat
+          lng
+        }
+      }
+      companyId {
+        openTime
+        closeTime
+        location {
+          lat
+          lng
+        }
+        queue
+      }
+      checkIn
+    }
+  }	
+`;
+
 const Homepage = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
 

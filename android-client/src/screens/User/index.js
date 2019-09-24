@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, ImageBackground, Image } from 'react-native';
+import { View, Text, ImageBackground, Image, TouchableHighlight } from 'react-native';
+import { Button } from 'react-native-elements';
 import MapView, { Marker } from 'react-native-maps';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
@@ -11,7 +12,22 @@ const GET_LOCAL_STATE = gql`
   }
 `;
 
-const Homepage = ({ navigation }) => {
+const GET_USER_DATA = gql`
+  query findOneUser($userId:String){
+    findOneUser(userId:$userId){
+      firstName
+      lastName
+      email
+      password
+      location {
+        lat
+        lng
+      }
+    }
+  }
+`;
+
+const UserPage = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
 
   if(data && data.fontLoaded){
@@ -21,11 +37,13 @@ const Homepage = ({ navigation }) => {
           <Image source={{ uri: 'https://via.placeholder.com/300'}} style={{  width: 240, height: 240, marginVertical: 30, borderRadius: 120 }}/>
           <Text style={{ fontSize: 32, fontFamily: 'nunito-bold' }}>Aditya Pradana</Text>
           <Text style={{ fontSize: 18, fontFamily: 'nunito' }}>adityabpradana@email.com</Text>
-          <View style={{ alignItems: 'center'}}>
-            <Ionicons name='md-create' style={{ color: '#888888', marginTop: 10, marginBottom: 20 }}> Edit Profile</Ionicons>
-          </View>
+          <TouchableHighlight onPress={() => navigation.navigate('EditProfile')}>
+            <View style={{ alignItems: 'center'}}>
+              <Ionicons name='md-create' style={{ color: '#888888', marginTop: 10, marginBottom: 20 }}> Edit Profil</Ionicons>
+            </View>
+          </TouchableHighlight>
           <View style={{ width: 300 }}>
-            <Text style={{ fontSize: 18, fontFamily: 'nunito-bold', marginVertical: 10 }}>Lokasi Asal</Text>
+          <Text style={{ fontSize: 24, fontFamily: 'nunito-bold', marginVertical: 10 }}>Lokasi Asal</Text>
             <MapView style={{ width: 300, height: 150 }} initialRegion={{
               latitude: -6.260181,
               longitude: 106.780505,
@@ -46,4 +64,4 @@ const Homepage = ({ navigation }) => {
   }
 }
 
-export default Homepage;
+export default UserPage;

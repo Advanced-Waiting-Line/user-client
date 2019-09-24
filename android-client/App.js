@@ -20,6 +20,7 @@ import SelectCompanyScreen from './src/screens/SelectCompany';
 import SelectProblemScreen from './src/screens/SelectProblem';
 import ReviewScreen from './src/screens/Review';
 import DoneScreen from './src/screens/Done';
+import EditScreen from './src/screens/Edit';
 
 const queueStack = createStackNavigator({
   HomePage: {
@@ -47,6 +48,18 @@ const queueStack = createStackNavigator({
 
 });
 
+const userStack = createStackNavigator({
+  Profile: {
+    screen: UserScreen
+  },
+  EditProfile: {
+    screen: EditScreen
+  }
+},{
+  initialRouteName: 'Profile',
+  headerMode: 'none'
+});
+
 const homeTab = createBottomTabNavigator({
   Queue: {
     screen: queueStack
@@ -55,7 +68,7 @@ const homeTab = createBottomTabNavigator({
     screen: HistoryScreen,
   },
   User: {
-    screen: UserScreen,
+    screen: userStack,
   },
 },{
   initialRouteName: 'Queue',

@@ -13,6 +13,28 @@ const GET_LOCAL_STATE = gql`
   }
 `;
 
+const CREATE_QUEUE = gql`
+  mutation createQueue(
+  $companyId: String
+  $token: String
+  $problemId: String
+  $userId: String
+  ){
+  createQueue(
+      companyId: $companyId
+      token: $token
+      problemId: $problemId
+      userId: $userId
+    ){
+      companyId
+      userId
+      problem
+      checkIn
+      duration
+    }
+  }
+`;
+
 const SelectProblem = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
 
