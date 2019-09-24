@@ -1,20 +1,50 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ImageBackground } from 'react-native';
 import { Card } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
 import CloudAnimation from '../../component/CloudAnimation';
 import Button from '../../component/Button';
 
 const GET_LOCAL_STATE = gql`
   {
     fontLoaded @client
+    userId @client
+  }
+`;
+
+const GET_USER_DATA = gql`
+  query findOneUser($userId:String){
+    findOneUser(userId:$userId){
+      firstName
+      lastName
+      email
+      image
+      password
+      location {
+        lat
+        lng
+      }
+    }
   }
 `;
 
 const Homepage = ({ navigation }) => {
+  const state = useApolloClient()
   const { data } = useQuery(GET_LOCAL_STATE);
+  const { data: dataUser } = useQuery(GET_USER_DATA, { variables: { userId: data.userId }})
+
+  if(dataUser){
+    state.writeData({ data: { 
+      firstName: dataUser.findOneUser.firstName,
+      lastName: dataUser.findOneUser.lastName,
+      email: dataUser.findOneUser.email,
+      image: dataUser.findOneUser.image,
+      password: dataUser.findOneUser.password,
+      location: dataUser.findOneUser.location
+     }})
+  }
 
   return (
     <ImageBackground source={require('../../../assets/bg-04.jpg')} resizeMode='cover' style={{ width: '100%', height: '100%', flex: 1}}>

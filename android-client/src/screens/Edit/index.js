@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { View, Text, ImageBackground, Image } from 'react-native';
 import { Button as ButtonPicker, Card } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,12 +13,25 @@ import Input from '../../component/TextInput';
 const GET_LOCAL_STATE = gql`
   {
     fontLoaded @client
+    userId @client
   }
 `;
 
-const FIND_ONE_USER = gql`
-  
-`
+const GET_USER_DATA = gql`
+  query findOneUser($userId:String){
+    findOneUser(userId:$userId){
+      firstName
+      lastName
+      email
+      image
+      password
+      location {
+        lat
+        lng
+      }
+    }
+  }
+`;
 
 const UPDATE_USER = gql`
   mutation updateUser(
@@ -41,33 +54,39 @@ const UPDATE_USER = gql`
       location: $location
     ){
       _id
-      firstName
-      lastName
-      email
-      password
-      location {
-        lat
-        lng
-      } 
     }
   }
 `;
 
 const EditProfile = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
-
+  const { data: dataUser } = useQuery(GET_USER_DATA, { variables: { userId: data.userId }})
+  
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(null);
   
   const [image, setImage] = useState(null);
   const [location, setLocation] = useState({
-    latitude: -6.260181,
-    longitude: 106.780505,
+    latitude: dataUser.findOneUser.location.lat,
+    longitude: dataUser.findOneUser.location.lng,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   })
+
+  const [editUser] = useMutation(UPDATE_USER, { variables: {
+    userId: data.userId,
+    firstName: firstName,
+    lastName: lastName,
+    location: {
+      lat: dataUser.findOneUser.location.lat,
+      lng: dataUser.findOneUser.location.lng
+    },
+    image: image,
+    email: email,
+    password: password
+  }})
 
   const _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -105,14 +124,14 @@ const EditProfile = ({ navigation }) => {
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Nama</Text>
           <View style={{ flexDirection: 'row', width: 300}}>
             <View style={{ flex: 0.5 }}>
-              <Input width={145} onChangeText={ text => setFirstName(text)} value={firstName}/>
+              <Input width={145} onChangeText={ text => setFirstName(text)} value={firstName} placeholder={dataUser.findOneUser.firstName}/>
             </View>
             <View style={{ flex: 0.5 }}>
-              <Input width={150} onChangeText={ text => setLastName(text)} value={lastName}/>
+              <Input width={150} onChangeText={ text => setLastName(text)} value={lastName} placeholder={dataUser.findOneUser.lastName}/>
             </View>
           </View>
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Email</Text>
-          <Input width={300} onChangeText={ text => setEmail(text)} value={email}/>
+          <Input width={300} onChangeText={ text => setEmail(text)} value={email} placeholder={dataUser.findOneUser.email}/>
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Password</Text>
           <Input password={true} width={300} onChangeText={ text => setPassword(text)} value={password}/>
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Lokasi</Text>
@@ -146,7 +165,10 @@ const EditProfile = ({ navigation }) => {
           }}
           />
           {image ? <Image source={{ uri: `data:image/jpeg;charset=utf-8;base64,${image}` }} style={{ width: 200, height: 200, resizeMode: 'cover', zIndex: 10 }} /> : <View/> }
-          <Button title='Edit' onPress={() => navigation.navigate('Login') }/>
+          <Button title='Edit' onPress={() => {
+            editUser()
+            navigation.navigate('Profile')
+          } }/>
         </View>
       </ImageBackground>
     )

@@ -25,6 +25,12 @@ const GET_COMPANY_PROBLEM = gql`
 
 const SelectProblem = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
+  const { data: dataProblem } = useQuery(GET_COMPANY_PROBLEM, { companyId: data.currentCompanyId })
+
+  let problems = []
+  if(dataProblem){
+    problems = dataProblem.getCompanyProblem
+  }
 
   if(data && data.fontLoaded){
     return (
@@ -34,7 +40,11 @@ const SelectProblem = ({ navigation }) => {
             <View style={{ width: 180, backgroundColor: '#0095FE', height: 12, borderRadius: 6 }}/>
           </View>
           <Text style={{ textAlign: 'left', width: 300, fontSize: 24, color: '#0095FE' }}>Pilih Layanan</Text>
-          <Card/>
+          {
+            problems.map(problem => {
+              return <Card/>
+            })
+          }
           <Button title='Lanjut' onPress={() => navigation.navigate('Review')} />
         </View>
       </ImageBackground>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ImageBackground } from 'react-native';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useApolloClient } from '@apollo/react-hooks';
 import Button from '../../component/FloatingButton';
 import Card from './components/card';
 
@@ -27,7 +27,14 @@ const GET_ALL_COMPANY = gql`
 `;
 
 const SelectCompany = ({ navigation }) => {
+  const state = useApolloClient()
   const { data } = useQuery(GET_LOCAL_STATE);
+  const { data: dataCompany } = useQuery(GET_ALL_COMPANY);
+
+  let companies = []
+  if(dataCompany){
+    companies = dataCompany.getAllCompany
+  }
 
   if(data && data.fontLoaded){
     return (
@@ -37,10 +44,11 @@ const SelectCompany = ({ navigation }) => {
             <View style={{ width: 120, backgroundColor: '#0095FE', height: 12, borderRadius: 6 }}/>
           </View>
           <Text style={{ textAlign: 'left', width: 300, fontSize: 24, color: '#0095FE' }}>Pilih Lokasi Bank</Text>
-          <Card/>
-          <Card/>
-          <Card/>
-          <Card/>
+          {
+            companies.map(company => {
+              return <Card/>
+            })
+          }
           <Button title='Lanjut' onPress={() => navigation.navigate('SelectProblem')} />
         </View>
       </ImageBackground>

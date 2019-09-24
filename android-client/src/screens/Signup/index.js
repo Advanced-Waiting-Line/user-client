@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import gql from 'graphql-tag';
+import { View, Text, ImageBackground, ToastAndroid } from 'react-native';
+import { Button as ButtonPicker } from 'react-native-elements';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { View, Text, ImageBackground, Image } from 'react-native';
-import { Button as ButtonPicker, Card } from 'react-native-elements';
+import gql from 'graphql-tag';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -14,9 +14,9 @@ const GET_LOCAL_STATE = gql`
   {
     fontLoaded @client
   }
-`;
+`
 
-const SIGNUP = gql`
+const REGISTER_USER = gql`
   mutation registerUser(
   $firstName: String
   $lastName: String
@@ -37,7 +37,7 @@ const SIGNUP = gql`
       _id
     }
   }
-`;
+`
 
 
 const SignUp = ({ navigation }) => {
@@ -46,26 +46,28 @@ const SignUp = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  
-  const [image, setImage] = useState(null);
+  const [password, setPassword] = useState('');  
+  const [image, setImage] = useState('');
   const [location, setLocation] = useState({
     latitude: -6.260181,
     longitude: 106.780505,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
-  })
+  });
 
-  const register = () => {
-    useMutation(SIGNUP, { variables: {
-      firstName,
-      lastName,
-      email,
-      password,
-      image,
-      location
-    }})
-  };
+  const [register] = useMutation(REGISTER_USER, {
+    variables: {
+      firstName: firstName,
+      lastName: lastName,
+      location: {
+        lat: location.latitude,
+        lng: location.longitude
+      },
+      image: image,
+      email: email,
+      password: password,
+    }
+  })
 
   const _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -143,8 +145,17 @@ const SignUp = ({ navigation }) => {
             backgroundColor: '#ffffff'
           }}
           />
-          {image ? <Image source={{ uri: `data:image/jpeg;charset=utf-8;base64,${image}` }} style={{ width: 200, height: 200, resizeMode: 'cover', zIndex: 10 }} /> : <View/> }
-          <Button title='Daftar' onPress={() => navigation.navigate('Login') }/>
+          <Button title='Daftar'
+            onPress={() => register()
+            .then(() => {
+              ToastAndroid.show('User Registered', ToastAndroid.SHORT, ToastAndroid.CENTER)
+              navigation.navigate('Login')
+            })
+            .catch(err => {
+             ToastAndroid.show('Cannot Register User, Please Fill with Valid Input', ToastAndroid.LONG, ToastAndroid.CENTER)
+            })
+            }/>
+          <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#ffffff', marginTop: 10 }} onPress={() => navigation.navigate('Login')}>Sudah memiliki akun? Langsung masuk saja...</Text>
         </View>
       </ImageBackground>
     )

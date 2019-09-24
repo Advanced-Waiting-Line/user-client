@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
-import { View, Text, ImageBackground } from 'react-native';
+import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
+import { View, Text, ImageBackground, ToastAndroid } from 'react-native';
 import Button from '../../component/Button';
 import Input from '../../component/TextInput';
 
@@ -29,10 +29,18 @@ const SIGNIN = gql`
 `;
 
 const SignIn = ({ navigation }) => {
+  const state = useApolloClient()
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const { data } = useQuery(GET_LOCAL_STATE);
+
+  const [login] = useMutation(SIGNIN, {
+    variables: {
+      email,
+      password
+    }
+  });
 
   if(data && data.fontLoaded){
     return (
@@ -44,7 +52,15 @@ const SignIn = ({ navigation }) => {
           <Text style={{ fontFamily: 'nunito-bold', fontSize: 24, color: '#ffffff', textAlign: 'left', width: 300 }}>Password</Text>
           <Input width={300} onChangeText={ text => setPassword(text)} value={password} password={true}/>
           <View style={{ height: 20 }} />
-          <Button title='Masuk' onPress={ ()=> navigation.navigate('Home')}/>
+          <Button title='Masuk' onPress={ ()=> login()
+            .then(({data}) => {
+              state.writeData({ data: { userId: data.loginUser._id, token: data.loginUser.token }})
+              navigation.navigate('Home', { userId: data.loginUser._id })
+            })
+            .catch(() => {
+              ToastAndroid.show('Cannot Login, Please Input Valid Data', ToastAndroid.LONG, ToastAndroid.CENTER)
+            })
+          }/>
         </View>
       </ImageBackground>
     )

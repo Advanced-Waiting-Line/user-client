@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
-import ApolloClient from 'apollo-boost';
-import { ApolloProvider, useApolloClient } from '@apollo/react-hooks';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import { FontAwesome } from '@expo/vector-icons'
 import * as Font from 'expo-font';
+import { ApolloProvider, useApolloClient } from '@apollo/react-hooks';
+import ApolloClient from 'apollo-boost';
 
 import LandingScreen from './src/screens/Landing';
 import LoginScreen from './src/screens/Signin';
@@ -62,7 +62,7 @@ const userStack = createStackNavigator({
 
 const homeTab = createBottomTabNavigator({
   Queue: {
-    screen: queueStack
+    screen: queueStack,
   },
   History: {
     screen: HistoryScreen,
@@ -126,7 +126,7 @@ const rootSwitch = createSwitchNavigator({
 const Navigation = createAppContainer(rootSwitch)
 
 const client = new ApolloClient({
-  uri: 'http://localhost:3000/graphql',
+  uri: 'http://localhost:4000/graphql',
   resolvers: {}
 });
 
