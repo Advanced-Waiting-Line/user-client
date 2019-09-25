@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
 import { View, Text, ImageBackground, Image } from 'react-native';
 import { Button as ButtonPicker, Card } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
@@ -59,6 +59,7 @@ const UPDATE_USER = gql`
 `;
 
 const EditProfile = ({ navigation }) => {
+  const state = useApolloClient()
   const { data } = useQuery(GET_LOCAL_STATE);
   const { data: dataUser } = useQuery(GET_USER_DATA, { variables: { userId: data.userId }})
   
@@ -86,7 +87,20 @@ const EditProfile = ({ navigation }) => {
     image: image,
     email: email,
     password: password
-  }})
+  }, onCompleted(){
+    navigation.navigate('Profile')
+  },
+    update(cache, { data }){
+      state.writeData({ data: { 
+        firstName: dataUser.updateUser.firstName,
+        lastName: dataUser.updateUser.lastName,
+        email: dataUser.updateUser.email,
+        image: dataUser.updateUser.image,
+        password: dataUser.updateUser.password,
+        location: dataUser.updateUser.location
+       }})
+    }
+  })
 
   const _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -167,7 +181,6 @@ const EditProfile = ({ navigation }) => {
           {image ? <Image source={{ uri: `data:image/jpeg;charset=utf-8;base64,${image}` }} style={{ width: 200, height: 200, resizeMode: 'cover', zIndex: 10 }} /> : <View/> }
           <Button title='Edit' onPress={() => {
             editUser()
-            navigation.navigate('Profile')
           } }/>
         </View>
       </ImageBackground>

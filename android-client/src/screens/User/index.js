@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ImageBackground, Image, TouchableHighlight } from 'react-native';
 import { Button } from 'react-native-elements';
 import MapView, { Marker } from 'react-native-maps';
@@ -40,7 +40,7 @@ const GET_USER_DATA = gql`
 const UserPage = ({ navigation }) => {
   const state = useApolloClient()
   const { data } = useQuery(GET_LOCAL_STATE);
-  const { data: dataUser } = useQuery(GET_USER_DATA, { variables: { userId: data.userId }})
+  const { data: dataUser, refetch } = useQuery(GET_USER_DATA, { variables: { userId: data.userId }})
 
   useEffect(() => {
     if(dataUser){
@@ -54,7 +54,6 @@ const UserPage = ({ navigation }) => {
        }})
     }
   }, [dataUser])
-  
 
   if(data && data.fontLoaded){
     return (
