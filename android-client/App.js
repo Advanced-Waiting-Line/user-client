@@ -3,8 +3,8 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import { FontAwesome } from '@expo/vector-icons'
-import * as Font from 'expo-font';
 import { ApolloProvider, useApolloClient } from '@apollo/react-hooks';
+import * as Font from 'expo-font';
 import ApolloClient from 'apollo-boost';
 
 import LandingScreen from './src/screens/Landing';

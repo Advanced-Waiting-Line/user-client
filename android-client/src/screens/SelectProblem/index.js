@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ImageBackground } from 'react-native';
+import { useQuery, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
 import Button from '../../component/FloatingButton';
 import Card from './components/card';
 
 const GET_LOCAL_STATE = gql`
   {
     fontLoaded @client
+    selectedCompany @client
   }
 `;
 
@@ -16,6 +17,7 @@ const GET_COMPANY_PROBLEM = gql`
     getCompanyProblem(
       companyId: $companyId
     ){
+      _id
       name
       description
       duration
@@ -24,8 +26,13 @@ const GET_COMPANY_PROBLEM = gql`
 `;
 
 const SelectProblem = ({ navigation }) => {
+  const state = useApolloClient()
   const { data } = useQuery(GET_LOCAL_STATE);
-  const { data: dataProblem } = useQuery(GET_COMPANY_PROBLEM, { companyId: data.currentCompanyId })
+  const { data: dataProblem } = useQuery(GET_COMPANY_PROBLEM, { variables: {companyId: data.selectedCompany} })
+  
+  const [active, setActive] = useState(0);
+  const [selectedProblem, setSelectedProblem] = useState('');
+  const [detailedProblem, setDetailedProblem] = useState('');
 
   let problems = []
   if(dataProblem){
@@ -41,11 +48,27 @@ const SelectProblem = ({ navigation }) => {
           </View>
           <Text style={{ textAlign: 'left', width: 300, fontSize: 24, color: '#0095FE' }}>Pilih Layanan</Text>
           {
-            problems.map(problem => {
-              return <Card/>
+            problems.map((problem, uniqueKey) => {
+              return <Card onPress={() => {
+                setActive(uniqueKey)
+                setSelectedProblem(problem._id)
+                setDetailedProblem({
+                  name: problem.name,
+                  duration: problem.duration
+                })
+              }
+            }
+            problem={problem}
+            active={active}
+            uniqueKey={uniqueKey}
+            key={uniqueKey}/>
             })
           }
-          <Button title='Lanjut' onPress={() => navigation.navigate('Review')} />
+          <Button title='Lanjut' onPress={() => {
+            state.writeData({ data: { selectedProblem: selectedProblem, detailedProblem: {...detailedProblem, "__typename": "ProblemDetail" }}})
+            navigation.navigate('Review')
+          }}
+          />
         </View>
       </ImageBackground>
     )

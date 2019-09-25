@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ImageBackground } from 'react-native';
+import { View, Text, ImageBackground, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import { Card } from 'react-native-elements';
+import { useQuery, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import Button from '../../component/FloatingButton';
 
 const GET_LOCAL_STATE = gql`
   {
-    fontLoaded @client,
+    fontLoaded @client
+    location @client {
+      lat
+      lng
+    }
   }
 `;
 
 const SelectLocation = ({ navigation }) => {
+  const state = useApolloClient()
   const { data } = useQuery(GET_LOCAL_STATE);
 
-  const [currentLocation, setCurrentLocation] = useState({
-    lat: '',
-    lng: ''
-  })
+  const [active, setActive] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [currentLocation, setCurrentLocation] = useState('');
+  const [detailedLocation, setDetailedLocation] = useState('');
 
   const  _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -29,11 +34,11 @@ const SelectLocation = ({ navigation }) => {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    setLocation(location.coords);
+    setCurrentLocation(location.coords)
   };
 
   useEffect(() => {
-    _getLocationAsync()
+   _getLocationAsync()
   }, [])
 
   if(data && data.fontLoaded){
@@ -45,34 +50,70 @@ const SelectLocation = ({ navigation }) => {
           </View>
           <Text style={{ textAlign: 'left', width: 300, fontSize: 24, color: '#0095FE' }}>Pilih Lokasi Keberangkatan</Text>
           
-          <Card containerStyle={{ height: 72, width: 300, borderRadius: 10 }}>
-            <View style={{ flex: 1, flexDirection: 'row' }}>
-              <View style={{ flex: 0.2 }}>
-                <Ionicons name='md-home' size={36} color='#888888'/>
+          <TouchableOpacity onPress={() => {
+            setActive(1)
+            setSelectedLocation(data.location)
+            setDetailedLocation('Alamat Rumah Anda')
+          }}>
+            <Card containerStyle={[ styles.card, active == 1 && styles.active ]}>
+              <View style={{ flex: 1, flexDirection: 'row' }}>
+                <View style={{ flex: 0.2 }}>
+                  <Ionicons name='md-home' size={36} color='#888888'/>
+                </View>
+                <View style={{ flex: 0.8 }}>
+                  <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Alamat Rumah Anda</Text>
+                  <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>Jalan Cendrawasih</Text>
+                </View>
               </View>
-              <View style={{ flex: 0.8 }}>
-                <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Alamat Rumah Anda</Text>
-                <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>Jalan Cendrawasih</Text>
+            </Card>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => {
+            setActive(2)
+            setSelectedLocation({
+              lat: currentLocation.latitude,
+              lng: currentLocation.longitude
+            })
+            setDetailedLocation('Posisi Anda Saat Ini')
+          }}>
+            <Card containerStyle={[ styles.card, active === 2 && styles.active ]}>
+              <View style={{ flex: 1, flexDirection: 'row' }}>
+                <View style={{ flex: 0.2 }}>
+                  <Ionicons name='md-pin' size={36} color='#888888'/>
+                </View>
+                <View style={{ flex: 0.8 }}>
+                  <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Posisi Anda Saat Ini</Text>
+                  <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>Menggunakan GPS</Text>
+                </View>
               </View>
-            </View>
-          </Card>
-          <Card containerStyle={{ height: 72, width: 300, borderRadius: 10 }}>
-            <View style={{ flex: 1, flexDirection: 'row' }}>
-              <View style={{ flex: 0.2 }}>
-                <Ionicons name='md-pin' size={36} color='#888888'/>
-              </View>
-              <View style={{ flex: 0.8 }}>
-                <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Posisi Anda Saat Ini</Text>
-                <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>Menggunakan GPS</Text>
-              </View>
-            </View>
-          </Card>
+            </Card>
+          </TouchableOpacity>
+
           <View style={{ height: 30 }} />
-          <Button title='Lanjut' onPress={() => navigation.navigate('SelectCompany')} />
+          <Button title='Lanjut' onPress={() => {
+            state.writeData({ data: {
+              selectedLocation: {...selectedLocation, "__typename": "Location"},
+              detailedLocation: detailedLocation
+            }})
+            navigation.navigate('SelectCompany')
+          }}
+          />
         </View>
       </ImageBackground>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  card: {
+    height: 72,
+    width: 300,
+    borderRadius: 10
+  },
+  active: {
+    borderColor: '#0095FE',
+    borderWidth: 1
+  }
+})
 
 export default SelectLocation;

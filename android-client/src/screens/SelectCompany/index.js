@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ImageBackground } from 'react-native';
-import gql from 'graphql-tag';
 import { useQuery, useApolloClient } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 import Button from '../../component/FloatingButton';
 import Card from './components/card';
 
@@ -15,7 +15,11 @@ const GET_ALL_COMPANY = gql`
   query getAllCompany{
     getAllCompany{
       _id
-      queue
+      queue {
+        _id
+      }
+      name
+      address
       email
       password
       location {
@@ -31,6 +35,10 @@ const SelectCompany = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
   const { data: dataCompany } = useQuery(GET_ALL_COMPANY);
 
+  const [active, setActive] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState('');
+  const [detailedCompany, setDetailedCompany] = useState('');
+
   let companies = []
   if(dataCompany){
     companies = dataCompany.getAllCompany
@@ -45,11 +53,27 @@ const SelectCompany = ({ navigation }) => {
           </View>
           <Text style={{ textAlign: 'left', width: 300, fontSize: 24, color: '#0095FE' }}>Pilih Lokasi Bank</Text>
           {
-            companies.map(company => {
-              return <Card/>
+            companies.map((company, uniqueKey) => {
+              return <Card onPress={() => {
+                setActive(uniqueKey)
+                setSelectedCompany(company._id)
+                setDetailedCompany({
+                  name: company.name,
+                  address: company.address
+                })
+                }
+              }
+              company={company}
+              active={active}
+              uniqueKey={uniqueKey}
+              key={uniqueKey}/>
             })
           }
-          <Button title='Lanjut' onPress={() => navigation.navigate('SelectProblem')} />
+          <Button title='Lanjut' onPress={() => {
+            state.writeData({ data: { selectedCompany: selectedCompany, detailedCompany: {...detailedCompany, "__typename": "CompanyLocation"} }})
+            navigation.navigate('SelectProblem')
+            }}
+          />
         </View>
       </ImageBackground>
     )

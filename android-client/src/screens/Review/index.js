@@ -2,14 +2,31 @@ import React, { useEffect } from 'react';
 import { View, Text, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Divider } from 'react-native-elements';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
 import Button from '../../component/FloatingButton';
 import Axios from 'axios'
 
 const GET_LOCAL_STATE = gql`
   {
     fontLoaded @client
+    token @client
+    userId @client
+    selectedLocation @client {
+      lat
+      lng
+    }
+    selectedCompany @client
+    selectedProblem @client
+    detailedLocation @client
+    detailedCompany @client {
+      name
+      address
+    }
+    detailedProblem @client {
+      name
+      duration
+    }
   }
 `;
 
@@ -35,16 +52,25 @@ const CREATE_QUEUE = gql`
   }
 `;
 
-const SelectProblem = ({ navigation }) => {
+const Review = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
 
-  useEffect(() => {
-    Axios.get('https://maps.googleapis.com/maps/api/directions/json?origin=Bandung&destination=Jakarta&key=AIzaSyC8MMkbDo_v6ZjOTGw3-N7iJr8RZmaxn4s')
-      .then(({ data }) => {
-        console.log(data)
-      })
-      .catch(console.log)
-  }, [])
+  const [createQueue] = useMutation(CREATE_QUEUE, { variables: {
+    companyId: '',
+    token: '',
+    problemId: '',
+    userId: ''
+  }})
+
+  console.log(data)
+
+  // useEffect(() => {
+    // Axios.get('https://maps.googleapis.com/maps/api/directions/json?origin=Bandung&destination=Jakarta&key=AIzaSyC8MMkbDo_v6ZjOTGw3-N7iJr8RZmaxn4s')
+    //   .then(({ data }) => {
+    //     console.log(data)
+    //   })
+    //   .catch(console.log)
+  // }, [])
 
   if(data && data.fontLoaded){
     return (
@@ -58,11 +84,10 @@ const SelectProblem = ({ navigation }) => {
           <Card containerStyle={{ height: 72, width: 300, borderRadius: 10 }}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <View style={{ flex: 0.2 }}>
-                <Ionicons name='md-home' size={36} color='#888888'/>
+                <Ionicons name='md-pin' size={36} color='#888888'/>
               </View>
               <View style={{ flex: 0.8 }}>
-                <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Alamat Rumah Anda</Text>
-                <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>Jalan Cendrawasih</Text>
+                <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>{ data.detailedLocation }</Text>
               </View>
             </View>
           </Card>
@@ -73,16 +98,16 @@ const SelectProblem = ({ navigation }) => {
                 <Ionicons name='md-cash' size={36} color='#888888'/>
               </View>
               <View style={{ flex: 0.8 }}>
-                <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Bank Kaya Raya</Text>
-                <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>Jalan Mangga No. 5</Text>
+                <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>{ data.detailedCompany.name }</Text>
+                <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>{ data.detailedCompany.address }</Text>
               </View>
             </View>
           </Card>
           <Divider style={{ height: 20, borderColor: '#0095FE' }}/>
           <View style={{ width: 300, borderTopColor: '#dddddd', borderTopWidth: 1, paddingTop: 10 }}>
-            <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Buat Rekening Baru</Text>
+            <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>{ data.detailedProblem.name }</Text>
             <Ionicons name='md-clock' color='#666666' size={14}>
-              <Text style={{ fontFamily: 'nunito'}}> Estimasi 40 Menit</Text>
+              <Text style={{ fontFamily: 'nunito'}}> {data.detailedProblem.duration} Menit</Text>
             </Ionicons>
           </View>
           <Card containerStyle={{ height: 120, width: 300, borderRadius: 10 }}>
@@ -97,7 +122,9 @@ const SelectProblem = ({ navigation }) => {
         </View>
       </ImageBackground>
     )
+  } else {
+    return <View/>
   }
 }
 
-export default SelectProblem;
+export default Review;
