@@ -62,7 +62,6 @@ const SelectLocation = ({ navigation }) => {
                 </View>
                 <View style={{ flex: 0.8 }}>
                   <Text style={{ fontSize: 18, fontFamily: 'nunito-bold' }}>Alamat Rumah Anda</Text>
-                  <Text style={{ fontSize: 14, fontFamily: 'nunito', color: '#888888' }}>Jalan Cendrawasih</Text>
                 </View>
               </View>
             </Card>

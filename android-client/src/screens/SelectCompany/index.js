@@ -51,7 +51,7 @@ const SelectCompany = ({ navigation }) => {
           <View style={{ width: 300, backgroundColor: '#dddddd', height: 12, borderRadius: 6, marginBottom: 20 }}>
             <View style={{ width: 120, backgroundColor: '#0095FE', height: 12, borderRadius: 6 }}/>
           </View>
-          <Text style={{ textAlign: 'left', width: 300, fontSize: 24, color: '#0095FE' }}>Pilih Lokasi Bank</Text>
+          <Text style={{ textAlign: 'left', width: 300, fontSize: 24, color: '#0095FE' }}>Pilih Lokasi Tujuan</Text>
           {
             companies.map((company, uniqueKey) => {
               return <Card onPress={() => {

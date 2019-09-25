@@ -39,11 +39,13 @@ const CREATE_QUEUE = gql`
   $companyId: String
   $token: String
   $problemId: String
+  $distance: Int
   ){
   createQueue(
       companyId: $companyId
       token: $token
       problemId: $problemId
+      distance: $distance
     ){
       companyId {
         name
@@ -61,11 +63,12 @@ const CREATE_QUEUE = gql`
 `;
 
 const CREATE_PREVIEW = gql`
-  mutation getPreview($companyId:String, $token: String, $problemId: String){
+  mutation getPreview($companyId:String, $token: String, $problemId: String, $distance: Int){
   getPreview(
     companyId:$companyId,
     token: $token,
-    problemId: $problemId
+    problemId: $problemId,
+    distance: $distance
   ){
       checkIn
       duration
@@ -79,24 +82,28 @@ const Review = ({ navigation }) => {
   const [createQueue, queue] = useMutation(CREATE_QUEUE, { variables: {
     companyId: data.selectedCompany,
     token: data.token,
-    problemId: data.selectedProblem
+    problemId: data.selectedProblem,
+    distance: durationSecond || 300
   }})
 
   const [createQueuePreview, queuePreview] = useMutation(CREATE_PREVIEW, {
     variables: {
       companyId: data.selectedCompany,
       token: data.token,
-      problemId: data.selectedProblem
+      problemId: data.selectedProblem,
+      distance: durationSecond || 300
     }
   })
 
 
   const [estimationTime, setEstimationTime] = useState('')
+  const [durationSecond, setDurationSecond] = useState('')
 
   useEffect(() => {
     createQueuePreview()
     Axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${data.selectedLocation.lat},${data.selectedLocation.lng}&destination=${data.detailedCompany.location.lat},${data.detailedCompany.location.lng}&key=AIzaSyCVNjx0q6PYDHeFw1JbyPWaJHOvMX7EkLY`)
       .then(({ data }) => {
+        setDurationSecond(data.routes[0].legs[0].duration.value)
         setEstimationTime(data.routes[0].legs[0].duration.text)
         console.log(data.routes[0].legs[0].duration)
       })
@@ -106,8 +113,7 @@ const Review = ({ navigation }) => {
   let checkIn = '';
   if(queuePreview){
     if(queuePreview.data){
-      checkIn = queuePreview.data.getPreview.checkIn
-      checkIn = new Date(checkIn).toLocaleString()
+      checkIn = new Date(queuePreview.data.getPreview.checkIn).toLocaleString()
     }
   }
   
