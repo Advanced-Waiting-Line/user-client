@@ -55,17 +55,18 @@ const SelectCompany = ({ navigation }) => {
           {
             companies.map((company, uniqueKey) => {
               return <Card onPress={() => {
-                setActive(uniqueKey)
+                setActive(company._id)
                 setSelectedCompany(company._id)
                 setDetailedCompany({
                   name: company.name,
-                  address: company.address
+                  address: company.address,
+                  location: company.location
                 })
                 }
               }
               company={company}
               active={active}
-              uniqueKey={uniqueKey}
+              uniqueKey={company._id}
               key={uniqueKey}/>
             })
           }

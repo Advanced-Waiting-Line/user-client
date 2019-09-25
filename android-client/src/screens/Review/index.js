@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Divider } from 'react-native-elements';
@@ -22,6 +22,10 @@ const GET_LOCAL_STATE = gql`
     detailedCompany @client {
       name
       address
+      location {
+        lat
+        lng
+      }
     }
     detailedProblem @client {
       name
@@ -35,43 +39,79 @@ const CREATE_QUEUE = gql`
   $companyId: String
   $token: String
   $problemId: String
-  $userId: String
   ){
   createQueue(
       companyId: $companyId
       token: $token
       problemId: $problemId
-      userId: $userId
     ){
-      companyId
-      userId
-      problem
+      companyId {
+        name
+      }
+      userId {
+        firstName
+      }
+      problem {
+        name
+      }
       checkIn
       duration
     }
   }
 `;
 
+const CREATE_PREVIEW = gql`
+  mutation getPreview($companyId:String, $token: String, $problemId: String){
+  getPreview(
+    companyId:$companyId,
+    token: $token,
+    problemId: $problemId
+  ){
+      checkIn
+      duration
+    },
+  }
+`;
+
 const Review = ({ navigation }) => {
   const { data } = useQuery(GET_LOCAL_STATE);
 
-  const [createQueue] = useMutation(CREATE_QUEUE, { variables: {
-    companyId: '',
-    token: '',
-    problemId: '',
-    userId: ''
+  const [createQueue, queue] = useMutation(CREATE_QUEUE, { variables: {
+    companyId: data.selectedCompany,
+    token: data.token,
+    problemId: data.selectedProblem
   }})
 
-  console.log(data)
+  const [createQueuePreview, queuePreview] = useMutation(CREATE_PREVIEW, {
+    variables: {
+      companyId: data.selectedCompany,
+      token: data.token,
+      problemId: data.selectedProblem
+    }
+  })
 
-  // useEffect(() => {
-    // Axios.get('https://maps.googleapis.com/maps/api/directions/json?origin=Bandung&destination=Jakarta&key=AIzaSyC8MMkbDo_v6ZjOTGw3-N7iJr8RZmaxn4s')
-    //   .then(({ data }) => {
-    //     console.log(data)
-    //   })
-    //   .catch(console.log)
-  // }, [])
 
+  const [estimationTime, setEstimationTime] = useState('')
+
+  useEffect(() => {
+    createQueuePreview()
+    Axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${data.selectedLocation.lat},${data.selectedLocation.lng}&destination=${data.detailedCompany.location.lat},${data.detailedCompany.location.lng}&key=AIzaSyCVNjx0q6PYDHeFw1JbyPWaJHOvMX7EkLY`)
+      .then(({ data }) => {
+        setEstimationTime(data.routes[0].legs[0].duration.text)
+        console.log(data.routes[0].legs[0].duration)
+      })
+      .catch(console.log)
+  }, [])
+
+  let checkIn = '';
+  if(queuePreview){
+    if(queuePreview.data){
+      checkIn = queuePreview.data.getPreview.checkIn
+      checkIn = new Date(checkIn).toLocaleString()
+    }
+  }
+  
+  console.log(queuePreview.data)
   if(data && data.fontLoaded){
     return (
       <ImageBackground source={require('../../../assets/bg-04.jpg')} resizeMode='cover' style={{ width: '100%', height: '100%', flex: 1}}>
@@ -113,12 +153,15 @@ const Review = ({ navigation }) => {
           <Card containerStyle={{ height: 120, width: 300, borderRadius: 10 }}>
             <View style={{ flex: 1, alignContent: 'center' }}>
               <Text style={{ fontSize: 18, textAlign: 'center', color: '#666666', fontFamily: 'nunito-bold'}}>Waktu Datang</Text>
-              <Text style={{ fontSize: 14, textAlign: 'center', color: '#0095FE', fontFamily: 'nunito'}}>09.00 WIB, 29 September 2019</Text>
+              <Text style={{ fontSize: 14, textAlign: 'center', color: '#0095FE', fontFamily: 'nunito'}}>{checkIn}</Text>
               <Text style={{ fontSize: 18, textAlign: 'center', color: '#666666', fontFamily: 'nunito-bold'}}>Estimasi Perjalanan</Text>
-              <Text style={{ fontSize: 14, textAlign: 'center', color: '#0095FE', fontFamily: 'nunito'}}>15 Menit</Text>
+              <Text style={{ fontSize: 14, textAlign: 'center', color: '#0095FE', fontFamily: 'nunito'}}>{estimationTime}</Text>
             </View>
           </Card>
-          <Button title='Setuju' onPress={() => navigation.navigate('Done')}/>
+          <Button title='Setuju' onPress={() => {
+            createQueue()
+            navigation.navigate('Done', { checkIn: checkIn, estimationTime: estimationTime})
+            }}/>
         </View>
       </ImageBackground>
     )

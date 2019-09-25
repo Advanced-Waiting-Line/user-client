@@ -50,7 +50,7 @@ const SelectProblem = ({ navigation }) => {
           {
             problems.map((problem, uniqueKey) => {
               return <Card onPress={() => {
-                setActive(uniqueKey)
+                setActive(problem._id)
                 setSelectedProblem(problem._id)
                 setDetailedProblem({
                   name: problem.name,
@@ -60,7 +60,7 @@ const SelectProblem = ({ navigation }) => {
             }
             problem={problem}
             active={active}
-            uniqueKey={uniqueKey}
+            uniqueKey={problem._id}
             key={uniqueKey}/>
             })
           }

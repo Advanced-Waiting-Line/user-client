@@ -17,25 +17,13 @@ const GET_QUEUE_BY_USERID = gql`
         token: $token
     ) {
       _id
-      duration
-      userId {
-        firstName
-        lastName
-        location {
-          lat
-          lng
-        }
-      }
       companyId {
-        openTime
-        closeTime
-        location {
-          lat
-          lng
-        }
-        queue
+        name
       }
       checkIn
+      problem {
+        name
+      }
     }
   }	
 `;
@@ -56,7 +44,7 @@ const Homepage = ({ navigation }) => {
           <Text style={{ textAlign: 'left', width: 300, fontSize: 24 }}>History</Text>
           {
             queueLog.map( queue => {
-              <Card />
+              return <Card key={queue._id} queue={queue}/>
             })
           }
         </View>
