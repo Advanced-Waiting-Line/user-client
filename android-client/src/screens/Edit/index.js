@@ -54,6 +54,14 @@ const UPDATE_USER = gql`
       location: $location
     ){
       _id
+      firstName
+      lastName
+      email
+      image
+      location {
+        lat
+        lng
+      }
     }
   }
 `;
@@ -91,13 +99,15 @@ const EditProfile = ({ navigation }) => {
     navigation.navigate('Profile')
   },
     update(cache, { data }){
+      console.log(data)
+
       state.writeData({ data: { 
-        firstName: dataUser.updateUser.firstName,
-        lastName: dataUser.updateUser.lastName,
-        email: dataUser.updateUser.email,
-        image: dataUser.updateUser.image,
-        password: dataUser.updateUser.password,
-        location: dataUser.updateUser.location
+        firstName: data.updateUser.firstName,
+        lastName: data.updateUser.lastName,
+        email: data.updateUser.email,
+        image: data.updateUser.image,
+        password: data.updateUser.password,
+        location: data.updateUser.location
        }})
     }
   })

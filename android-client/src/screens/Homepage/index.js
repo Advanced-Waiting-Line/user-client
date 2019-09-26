@@ -56,7 +56,9 @@ const Homepage = ({ navigation }) => {
         {
           data && data.fontLoaded ? (
             <View>
-              <Text style={{ textAlign: 'left', width: 300, fontSize: 24, fontFamily: 'nunito-bold' }}>Halo Adit!</Text>
+              {
+                dataUser && <Text style={{ textAlign: 'left', width: 300, fontSize: 24, fontFamily: 'nunito-bold' }}>Halo { dataUser.findOneUser.name}!</Text>
+              }
               <Text style={{ textAlign: 'left', width: 300, fontSize: 18, marginBottom: 20, color: '#666666', fontFamily: 'nunito' }}>Mari kita ke tempat tujuan mu, tanpa harus antri...</Text>
             </View>
           ) : null
